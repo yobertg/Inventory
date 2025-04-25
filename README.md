@@ -1,61 +1,61 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+README
+Alur Pengerjaan Proyek UTS Manajemen Persediaan Toko
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+Proyek ini adalah aplikasi backend berbasis Laravel untuk mengelola persediaan barang pada suatu toko, meliputi kategori barang, pemasok atau supplier, dan admin yang bertanggung jawab atas pengelolaan data barang. Berikut adalah langkah-langkah yang saya lakukan selama mengerjakan proyek ini, mulai dari inisialisasi hingga selesai.
 
-## About Laravel
+1. Inisialisasi Proyek
+- Saya memulai dengan membuat folder proyek baru menggunakan Laragon, sebuah tools yang mempermudah pembuatan proyek Laravel.
+- Lalu Saya menjalankan perintah laravel new inventory untuk membuat proyek Laravel baru bernama "inventory".
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+2. Containerisasi dengan Docker
+- Saya mengatur containerisasi menggunakan Docker agar aplikasi dapat berjalan dalam lingkungan yang terisolasi.
+- Saya membuat file docker-compose.yml untuk mendefinisikan layanan seperti aplikasi Laravel (PHP), web server (Nginx), dan database (MySQL).
+- Setelah konfigurasi selesai, saya menjalankan docker-compose up -d untuk memulai container dan memastikan semua layanan berjalan dengan baik.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+3. Koneksi ke Database
+- Saya mengatur file .env dan konfigurasi database pada proyek Laravel untuk menghubungkan aplikasi dengan database MySQL yang berjalan di dalam container Docker lalu menguji koneksi database dengan menjalankan php artisan migrate untuk memastikan aplikasi dapat berkomunikasi dengan MySQL.
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+4. Pembuatan Model, Migration, dan Relasi
+Saya membuat model dan migration untuk tabel Admin, Category, Supplier, dan Item berdasarkan ERD yang telah dirancang.
+- Untuk tabel admins, saya membuat migration dengan kolom id, username, password, email, created_at, dan updated_at.
+- Untuk tabel categories, saya membuat migration dengan kolom id, name, description, created_by (foreign key ke admins), created_at, dan updated_at.
+- Untuk tabel suppliers, saya membuat migration dengan kolom id, name, contact_info, created_by (foreign key ke admins), created_at, dan updated_at.
+- Untuk tabel items, saya membuat migration dengan kolom id, name, description, price, quantity, category_id (foreign key ke categories), supplier_id (foreign key ke suppliers), created_by (foreign key ke admins), created_at, dan updated_at.
 
-## Learning Laravel
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+5. Pembuatan Controller
+Saya membuat controller untuk masing-masing entitas: AdminController, CategoryController, SupplierController, dan ItemController.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+Pada setiap controller, saya mengimplementasikan fungsi dasar:
+- index() untuk menampilkan daftar data (Read).
+- create() untuk menampilkan form pembuatan data (Create).
+- store() untuk menyimpan data baru ke database.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Saya juga membuat DashboardController untuk menangani logika halaman dashboard.
 
-## Laravel Sponsors
+6. Pembuatan View
+Saya membuat view menggunakan Blade untuk setiap entitas dengan fungsi Create dan Read:
+- Untuk items, saya membuat halaman untuk menampilkan daftar barang dan form untuk menambah barang baru.
+- Untuk categories, saya membuat halaman untuk menampilkan daftar kategori dan form untuk menambah kategori baru.
+- Untuk suppliers, saya membuat halaman untuk menampilkan daftar pemasok dan form untuk menambah pemasok baru.
+- Untuk admins, saya tidak membuat sistem login, melainkan halaman untuk memilih admin dari database yang sudah saya seed secara manual.
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+Saya membuat seeder untuk tabel admins menggunakan php artisan make:seeder AdminSeeder dan mengisi data admin secara manual dan menjalankan php artisan db:seed --class=AdminSeeder untuk mengisi data admin ke database.
+Lalu saya juga membuat halaman sederhana dengan dropdown untuk memilih admin yang akan digunakan dalam pengelolaan data yang nantinya akan berubah pada created_by di tabel item,category, dan supplier
 
-### Premium Partners
+7. Pembuatan Halaman Dashboard
+Saya membuat halaman dashboard dengan fitur berikut:
+- Ringkasan stok barang: Menampilkan stok total, total nilai stok (harga × jumlah), dan rata-rata harga barang menggunakan query Eloquent.
+- Daftar barang di bawah ambang batas: Menampilkan barang dengan stok di bawah 5 unit
+- Laporan barang berdasarkan kategori: Menampilkan daftar barang yang dapat difilter berdasarkan kategori tertentu.
+- Ringkasan per kategori: Menampilkan jumlah barang per kategori, total nilai stok per kategori, dan rata-rata harga barang dalam kategori tersebut menggunakan grouping dan agregasi.
+- Ringkasan per pemasok: Menampilkan jumlah barang per pemasok dan total nilai barang yang disuplai menggunakan relasi dan agregasi.
+- Ringkasan keseluruhan sistem: Menampilkan total jumlah barang, nilai stok keseluruhan, jumlah kategori, dan jumlah pemasok.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Redberry](https://redberry.international/laravel-development/)**
-- **[Active Logic](https://activelogic.com)**
+Saya membuat view dashboard.blade.php untuk menampilkan semua informasi ini dalam format yang rapi menggunakan tabel dan card.
 
-## Contributing
+8. Pengujian dan Penyelesaian
+Saya menguji aplikasi dengan langsung mengetikkan localhost:8000/admin/select karena sudah menggunakan docker.
+Saya memastikan semua fitur berjalan dengan baik, seperti memilih admin yang diinginkan,jika belum memilih admin maka tidak bisa mengakses halaman lainnya, lalu saya mengecek pembuatan data, pembacaan data, dan tampilan dashboard.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
-
-## Code of Conduct
-
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
-
-## Security Vulnerabilities
-
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
-
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+Setelah semua fitur berfungsi dengan baik, saya mendokumentasikan proyek ini dalam file README untuk menjelaskan alur pengerjaan.
